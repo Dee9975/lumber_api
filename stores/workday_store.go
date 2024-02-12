@@ -11,12 +11,17 @@ type WorkdayStore struct {
 }
 
 const (
-	getAllWorkdays = "select id, team_id, warehouse_id, created_at from workday"
+	createWorkdaySQL = "create table if not exists workday (id serial not null primary key, team_id int not null, warehouse_id int not null, created_at timestamp default current_timestamp)"
+	getAllWorkdays   = "select id, team_id, warehouse_id, created_at from workday"
 	//Timestamp needs to be in a format YYYY-M-D
 	getWorkdayFromTimestamp = "select id, team_id, warehouse_id, created_at from workday where DATE(date_trunc('day', created_at)) = $1"
 )
 
 func NewWorkdayStore(db *pgx.Conn) (*WorkdayStore, error) {
+	if _, err := db.Exec(context.Background(), createWorkdaySQL); err != nil {
+		return nil, err
+	}
+
 	return &WorkdayStore{
 		db: db,
 	}, nil

@@ -21,6 +21,8 @@ const (
 		amount integer not null,
 		team_id integer)`
 
+	createWarehouseTableSQL = "create table if not exists warehouses (id serial not null primary key, name text not null, rate int not null, custom_rate text not null)"
+
 	getAllLumberQuery  = "select width, height, len, amount, team_id from lumber"
 	createLumberSQL    = "insert into lumber (width, height, len, amount, team_id) values ($1, $2, $3, $4, $5)"
 	getLumberByIDQuery = "select width, height, len, amount, team_id from lumber where id = $1"
@@ -40,9 +42,8 @@ const (
 func NewLumberStore(db *pgx.Conn) (*LumberStore, error) {
 	// Create the table if it doesn't exist
 
-	_, err := db.Exec(context.Background(),
-		createLumberTableSQL,
-	)
+	_, err := db.Exec(context.Background(), createLumberTableSQL)
+	_, err = db.Exec(context.Background(), createWarehouseTableSQL)
 
 	if err != nil {
 		return nil, err

@@ -11,14 +11,15 @@ type EmployeeStore struct {
 }
 
 const (
-	createEmployeesTableSQL = "create table if not exists employees (id serial not null primary key, first_name text not null, last_name text not null, email text not null)"
-	getAllEmployeesQuery    = "select * from employees"
-	getEmployeesByIdQuery   = "select * from employees where id = $1"
-	createEmployeeSQL       = "insert into employees (first_name, last_name, email) values ($1, $2, $3)"
-	updateEmployeesSQL      = "update employees set first_name = $1, last_name = $2, email = $3 where id = $4"
-	deleteEmployeeSQL       = "delete from employees where id = $1"
-	getTeamEmployee         = "select te.hours_worked, te.hours_worked_forklift, te.hours_worked_heating, (select first_name, last_name, email from employees where id = te.employee_id) from team_employees te where te.employee_id = $1"
-	getAllTeamEmployees     = `select 
+	createTeamsTableSQL         = "create table if not exists teams (id serial not null primary key, name text not null, created_at timestamp default current_timestamp)"
+	createEmployeesTableSQL     = "create table if not exists employees (id serial not null primary key, first_name text not null, last_name text not null, email text not null)"
+	createTeamEmployeesTableSQL = "create table if not exists team_employees (id serial not null primary key, team_id int not null, employee_id int not null, hours_worked int default 0, hours_worked_forklift int default 0, hours_worked_heating int default 0)"
+	getAllEmployeesQuery        = "select * from employees"
+	getEmployeesByIdQuery       = "select * from employees where id = $1"
+	createEmployeeSQL           = "insert into employees (first_name, last_name, email) values ($1, $2, $3)"
+	updateEmployeesSQL          = "update employees set first_name = $1, last_name = $2, email = $3 where id = $4"
+	deleteEmployeeSQL           = "delete from employees where id = $1"
+	getAllTeamEmployees         = `select 
        	employees.id,
        	employees.first_name,
        	employees.last_name,
@@ -36,6 +37,12 @@ const (
 
 func NewEmployeeStore(db *pgx.Conn) (*EmployeeStore, error) {
 	if _, err := db.Exec(context.Background(), createEmployeesTableSQL); err != nil {
+		return nil, err
+	}
+	if _, err := db.Exec(context.Background(), createTeamsTableSQL); err != nil {
+		return nil, err
+	}
+	if _, err := db.Exec(context.Background(), createTeamEmployeesTableSQL); err != nil {
 		return nil, err
 	}
 	return &EmployeeStore{
