@@ -1,0 +1,40 @@
+### Create lumber
+POST http://localhost:8080/api/v1/lumber
+Content-Type: application/json
+
+{
+  "width": 200,
+  "height": 400,
+  "len": 1000,
+  "amount": 100
+}
+
+### Get lumber by id
+GET http://localhost:8080/api/v1/lumber/1
+
+### Get all lumber
+GET http://localhost:8080/api/v1/lumber
+
+### Delete lumber
+DELETE http://localhost:8080/api/v1/lumber/2
+
+### Update Lumber
+PUT http://localhost:8080/api/v1/lumber/1
+Content-Type: application/json
+
+{
+  "width": 500,
+  "height": 500,
+  "len": 500,
+  "amount": 250
+}
+
+### Create an Employee
+POST http://localhost:8080/api/v1/employees
+Content-Type: application/json
+
+{
+  "first_name": "Matiss",
+  "last_name": "Kalnins",
+  "email": "matisskalnins6@gmail.com"
+}
